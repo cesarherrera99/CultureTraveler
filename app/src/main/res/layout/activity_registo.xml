@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegistoActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/bg" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="85dp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/logo2" />
+
+            <TextView
+                android:id="@+id/registoTxtV"
+                android:layout_width="150dp"
+                android:layout_height="55dp"
+                android:gravity="center"
+                android:text="Registo"
+                android:textColor="#000000"
+                android:textSize="40sp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/quickkiss"/>
+
+            <EditText
+                android:id="@+id/email_ETxt"
+                android:layout_width="271dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textPersonName"
+                android:textSize="24sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <EditText
+                android:id="@+id/nome_ETxt"
+                android:layout_width="271dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:hint="Nome"
+                android:inputType="textPersonName"
+                android:textSize="24sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <EditText
+                android:id="@+id/password_R_ETxt"
+                android:layout_width="271dp"
+                android:layout_height="50dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textSize="24sp"
+                android:layout_gravity="center"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <Button
+                android:id="@+id/registo_R_Button"
+                android:layout_width="250dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/black"
+                android:text="Continuar"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:cornerRadius="50dp" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="25dp" />
+
+            <Button
+                android:id="@+id/login_R_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tenho uma conta"
+                android:textSize="18sp"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/black"
+                app:cornerRadius="50dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

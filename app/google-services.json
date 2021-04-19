@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "122543543291",
+    "project_id": "culture-traveler-55313",
+    "storage_bucket": "culture-traveler-55313.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122543543291:android:97f4efbf67cea7cf50315e",
+        "android_client_info": {
+          "package_name": "com.example.culturetraveler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122543543291-tv0134tj1hnrr2bo7eju75mueri5v2o3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRPY63ezWz411PyGQ8tJ1TQ8oKS_4i2t8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122543543291-tv0134tj1hnrr2bo7eju75mueri5v2o3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

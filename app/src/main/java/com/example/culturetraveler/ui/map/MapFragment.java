@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public class MapFragment extends Fragment
 
     //widgets
     private EditText mSerachText;
+    private ImageView mGps;
 
     //vars
     private static final String TAG = "MyActivity";
@@ -68,6 +71,7 @@ public class MapFragment extends Fragment
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final float DEFAULT_ZOOM = 18;
+    private int mAnimated = 0; //Utilização: animar a camara
 
 
     @Override
@@ -76,6 +80,9 @@ public class MapFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         mSerachText = (EditText) view.findViewById(R.id.input_search);
+        mGps = (ImageView) view.findViewById(R.id.ic_gps);
+
+        Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
 
         getLocationPermission();
 
@@ -101,10 +108,11 @@ public class MapFragment extends Fragment
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(41.14961, -8.61099)).title("Porto").snippet("go here"));
+        //googleMap.addMarker(new MarkerOptions().position(new LatLng(41.14961, -8.61099)).title("Porto").snippet("go here"));
 
         if (mLocationPermission) {
-            getDiviceLocation();
+            mAnimated = 0;
+            getDiviceLocation(mAnimated);
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -118,6 +126,7 @@ public class MapFragment extends Fragment
         }
     }
 
+    //Função para a utilização de Widgets (SearchBar, MyLocationButton,....)
     public void init(){
         mSerachText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -132,8 +141,18 @@ public class MapFragment extends Fragment
                 return false;
             }
         });
+
+        mGps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: clicked GPS icon");
+                mAnimated = 1;
+                getDiviceLocation(mAnimated);
+            }
+        });
     }
 
+    //Função de procura de um PHC no searchBar
     public void geoLocate(){
         String searchString = mSerachText.getText().toString();
         Geocoder geocoder = new Geocoder(getActivity());
@@ -147,18 +166,13 @@ public class MapFragment extends Fragment
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a Location: "+ address.toString());
 
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
+            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
         }
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
-    }
 
     //Obter a Localizaçao do Utilizador
-    public void getDiviceLocation(){
+    public void getDiviceLocation(int mAnimated){
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         try {
             if (mLocationPermission){
@@ -168,7 +182,11 @@ public class MapFragment extends Fragment
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()){
                             Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                            if (mAnimated == 0){
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                            }else{
+                                animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                            }
                         }else {
                             Toast.makeText(getContext(),"não foi possivel obter Localização Atual", Toast.LENGTH_SHORT).show();
                         }
@@ -180,26 +198,24 @@ public class MapFragment extends Fragment
         }
     }
 
-    //Movimento da camara
-    public void moveCamera(LatLng latLng, float zoom){
+
+    //Inicio de Movimentos da Camara
+    //Camara estatica
+    public void moveCamera(LatLng latLng, float zoom, String title){
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-
-        MarkerOptions options = new MarkerOptions().position(latLng);
-        mGoogleMap.addMarker(options);
     }
 
-    //Inicio Botão mexer camara a minha localizacao
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
-        //the camera animates to the user's current position
-    }
+    //Camara animada
+    public void animatedCamera(LatLng latLng, float zoom, String title){
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
 
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-
+        if (!title.equals("My Location")){
+            MarkerOptions options = new MarkerOptions().position(latLng);
+            mGoogleMap.addMarker(options);
+        }
     }
-    //Fim do Botão
+    //Fim de Movimentos da Camara
+
 
     // Começo das Permissoes de Localização
     private void getLocationPermission(){;
@@ -243,4 +259,25 @@ public class MapFragment extends Fragment
         }
     }
     // Final das Permissoes de Localização
+
+
+    //Inicio Botão mexer camara a minha localizacao
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+        //the camera animates to the user's current position
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+
+    }
+    //Fim do Botão
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+    }
+
 }

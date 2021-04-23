@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class DisplayInicial extends AppCompatActivity {
 
-    int tempoDeEspera = 1000 * 8;
+    int tempoDeEspera = 1000 * 4;
 
     private ProgressBar spinner;
 

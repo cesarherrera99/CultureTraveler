@@ -65,11 +65,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             editTextPassword_L.requestFocus();
             return;
         }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            editTextEmail_L.setError("Por favor insira um email valido");
+            editTextEmail_L.setError("Por favor insira um email válido");
             editTextEmail_L.requestFocus();
             return;
         }else if (password.length() < 6){
-            editTextPassword_L.setError("insira um password com mais de 6 carateres");
+            editTextPassword_L.setError("insira um password com mais de 6 caracteres");
             editTextPassword_L.requestFocus();
             return;
         }

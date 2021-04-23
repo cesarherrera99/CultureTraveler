@@ -71,7 +71,7 @@ public class RegistoActivity extends AppCompatActivity implements View.OnClickLi
             editTextNome.setError("Por favor insira um Nome");
             editTextNome.requestFocus();
         }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            editTextEmail.setError("Por favor insira um email valido");
+            editTextEmail.setError("Por favor insira um email válido");
             editTextEmail.requestFocus();
             return;
         }else if (password.length() < 6){
@@ -91,15 +91,15 @@ public class RegistoActivity extends AppCompatActivity implements View.OnClickLi
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
-                                        Toast.makeText(RegistoActivity.this, "Registo Completado", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegistoActivity.this, "Registo Completo", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(RegistoActivity.this, MainActivity.class));
                                     }else{
-                                        Toast.makeText(RegistoActivity.this, "Erro na Criação da conta", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(RegistoActivity.this, "Erro na criação da conta", Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         }else{
-                            Toast.makeText(RegistoActivity.this, "Erro na Criação da conta", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegistoActivity.this, "Erro na criação da conta", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

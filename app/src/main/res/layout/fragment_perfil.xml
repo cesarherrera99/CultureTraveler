@@ -142,6 +142,7 @@
                 android:layout_gravity="center"
                 android:backgroundTint="@color/black"
                 android:text="Log Out"
+                android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:cornerRadius="50dp" />

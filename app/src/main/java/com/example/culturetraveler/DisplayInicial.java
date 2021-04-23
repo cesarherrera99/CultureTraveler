@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DisplayInicial extends AppCompatActivity {

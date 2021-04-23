@@ -27,7 +27,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="85dp" />
+                android:layout_height="45dp" />
 
             <ImageView
                 android:id="@+id/imageView"
@@ -53,12 +53,30 @@
                 android:layout_gravity="center"
                 android:ems="10"
                 android:hint="Email"
-                android:inputType="textPersonName"
-                android:textSize="24sp" />
+                android:inputType="textEmailAddress"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="30dp" />
+                android:layout_height="15dp" />
+
+            <EditText
+                android:id="@+id/password_R_ETxt"
+                android:layout_width="271dp"
+                android:layout_height="50dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="20sp"
+                android:layout_gravity="center"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="15dp" />
 
             <EditText
                 android:id="@+id/nome_ETxt"
@@ -68,21 +86,9 @@
                 android:ems="10"
                 android:hint="Nome"
                 android:inputType="textPersonName"
-                android:textSize="24sp" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="30dp" />
-
-            <EditText
-                android:id="@+id/password_R_ETxt"
-                android:layout_width="271dp"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:textSize="24sp"
-                android:layout_gravity="center"/>
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="match_parent"
@@ -95,9 +101,10 @@
                 android:layout_gravity="center"
                 android:backgroundTint="@color/black"
                 android:text="Continuar"
+                android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:cornerRadius="50dp" />
+                app:cornerRadius="50dp"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="25dp" />
@@ -107,10 +114,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tenho uma conta"
+                android:textColor="@color/white"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:layout_gravity="center"
                 android:backgroundTint="@color/black"
                 app:cornerRadius="50dp"/>
+
         </LinearLayout>
     </FrameLayout>
 

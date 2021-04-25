@@ -73,7 +73,8 @@ public class ListaFragment extends Fragment {
         adapter.setOnCliclListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), ""+listaPHC.get(recyclerView.getChildAdapterPosition(view)).getNome(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), ""+listaPHC.get(recyclerView.getChildAdapterPosition(view)).getNome(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
 

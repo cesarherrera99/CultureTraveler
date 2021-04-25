@@ -27,7 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class PerfilFragment extends Fragment {
+public class  PerfilFragment extends Fragment {
 
     private PerfilViewModel mViewModel;
 

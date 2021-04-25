@@ -15,7 +15,7 @@
         android:id="@+id/navigation_lista"
         android:name="com.example.culturetraveler.ui.lista.ListaFragment"
         android:label="@string/title_lista"
-        tools:layout="@layout/fragment_lista" />
+        tools:layout="@layout/fragment_lista_phc" />
 
     <fragment
         android:id="@+id/navigation_perfil"

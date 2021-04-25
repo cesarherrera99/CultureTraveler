@@ -2,6 +2,7 @@ package com.example.culturetraveler;
 
 import android.os.Bundle;
 
+import com.example.culturetraveler.ui.lista.ListaFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;

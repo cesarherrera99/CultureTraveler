@@ -3,4 +3,46 @@
     <string name="title_map">Mapa</string>
     <string name="title_lista">Lista</string>
     <string name="title_perfil">Perfil</string>
+
+    -----------Lista Fragment----------------
+    <string-array name="lista_phc">
+        <item>Avenida dos Aliados</item>
+        <item>Rua de Santa Catarina</item>
+        <item>Mercado do Bolhão</item>
+        <item>Galerias Paris</item>
+        <item>Livraria Lello</item>
+        <item>Torre dos Clérigos</item>
+        <item>Palácio da Bolsa</item>
+        <item>Igreja de São Francisco</item>
+        <item>Sé do Porto</item>
+        <item>Ribeira</item>
+        <item>Serra do Pilar</item>
+        <item>Jardins do Palácio de Cristal</item>
+        <item>Casa da Música</item>
+        <item>Parque da Cidade</item>
+        <item>Foz do Porto</item>
+        <item>Majestic Café</item>
+    </string-array>
+
+    <string-array name="descrição">
+        <item>O centro e o coração da cidade do Porto</item>
+        <item>A rua mais comercial do Porto</item>
+        <item>Pensado ao pormenor para acolher os comerciantes e os clientes</item>
+        <item>Um dos locais mais importantes da noite do Porto</item>
+        <item>Considerada uma das mais lindas livrarias do mundo</item>
+        <item>Considerada por muitos o ex-líbris da cidade</item>
+        <item>Estilo neoclássico e inspirado no estilo mourisco</item>
+        <item>A mais bela da cidade do Porto</item>
+        <item>Construída para proteger a cidade dos invasores</item>
+        <item>Um dos locais mais antigos e típicos do Porto</item>
+        <item>Um miradouro único para a cidade do Porto</item>
+        <item>Um dos espaços verdes mais visitados pelos habitantes do Porto e não só</item>
+        <item>Um dos edíficios mais originais e belos da cidade do Porto</item>
+        <item>Conhecido como o pulmão da cidade</item>
+        <item>A zona onde desagua o rio Douro</item>
+        <item>Café mais histórico da cidade do Porto </item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

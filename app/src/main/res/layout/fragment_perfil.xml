@@ -28,7 +28,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="140dp" />
+                android:layout_height="100dp" />
 
             <TextView
                 android:id="@+id/textView"
@@ -43,7 +43,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="60dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,11 +55,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_weight="1"
-                    android:fontFamily="@font/quickkiss"
+                    android:fontFamily="@font/roboto"
                     android:text="ID de Utilizador : "
                     android:textAlignment="viewEnd"
                     android:textColor="#000000"
-                    android:textSize="30dp" />
+                    android:textSize="25dp" />
 
                 <TextView
                     android:id="@+id/txtV_UserID"
@@ -85,11 +85,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_weight="1"
-                    android:fontFamily="@font/quickkiss"
+                    android:fontFamily="@font/roboto"
                     android:text="Nome : "
                     android:textAlignment="viewEnd"
                     android:textColor="#000000"
-                    android:textSize="30dp" />
+                    android:textSize="25dp" />
 
                 <TextView
                     android:id="@+id/txtV_Nome"
@@ -115,11 +115,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/quickkiss"
+                    android:fontFamily="@font/roboto"
                     android:text="Email : "
                     android:textAlignment="viewEnd"
                     android:textColor="#000000"
-                    android:textSize="30dp" />
+                    android:textSize="25dp" />
 
                 <TextView
                     android:id="@+id/txtV_Email"

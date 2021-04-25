@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,12 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.culturetraveler.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,12 +36,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,8 +49,7 @@ import java.util.List;
 
 public class MapFragment extends Fragment
         implements
-        GoogleMap.OnMyLocationButtonClickListener,
-        GoogleMap.OnMyLocationClickListener,
+        OnConnectionFailedListener,
         OnMapReadyCallback {
 
     private MapViewModel mViewModel;
@@ -58,18 +58,19 @@ public class MapFragment extends Fragment
         return new MapFragment();
     }
 
+    //vars
+    private FirebaseDatabase mPhc;
     private GoogleMap mGoogleMap;
     private MapView mMapView;
+    private boolean mLocationPermission = false;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     //widgets
-    private EditText mSerachText;
+    private AutoCompleteTextView mSerachText;
     private ImageView mGps;
 
-    //vars
     private static final String TAG = "MyActivity";
-    private boolean mLocationPermission = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final float DEFAULT_ZOOM = 18;
     private int mAnimated = 0; //Utilização: animar a camara
 
@@ -79,8 +80,10 @@ public class MapFragment extends Fragment
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mSerachText = (EditText) view.findViewById(R.id.input_search);
+        mSerachText = (AutoCompleteTextView) view.findViewById(R.id.input_search);
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
+
+        mPhc = FirebaseDatabase.getInstance();
 
         Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
 
@@ -106,8 +109,6 @@ public class MapFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        googleMap.setOnMyLocationButtonClickListener(this);
-        googleMap.setOnMyLocationClickListener(this);
         //googleMap.addMarker(new MarkerOptions().position(new LatLng(41.14961, -8.61099)).title("Porto").snippet("go here"));
 
         if (mLocationPermission) {
@@ -128,6 +129,7 @@ public class MapFragment extends Fragment
 
     //Função para a utilização de Widgets (SearchBar, MyLocationButton,....)
     public void init(){
+
         mSerachText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -183,9 +185,17 @@ public class MapFragment extends Fragment
                         if (task.isSuccessful()){
                             Location currentLocation = (Location) task.getResult();
                             if (mAnimated == 0){
-                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                try {
+                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                }catch (NullPointerException e){
+                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                }
                             }else{
-                                animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                try {
+                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                }catch (NullPointerException e){
+                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                }
                             }
                         }else {
                             Toast.makeText(getContext(),"não foi possivel obter Localização Atual", Toast.LENGTH_SHORT).show();
@@ -210,7 +220,7 @@ public class MapFragment extends Fragment
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
 
         if (!title.equals("My Location")){
-            MarkerOptions options = new MarkerOptions().position(latLng);
+            MarkerOptions options = new MarkerOptions().position(latLng).snippet(" "+ latLng);
             mGoogleMap.addMarker(options);
         }
     }
@@ -260,24 +270,14 @@ public class MapFragment extends Fragment
     }
     // Final das Permissoes de Localização
 
-
-    //Inicio Botão mexer camara a minha localizacao
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
-        //the camera animates to the user's current position
-    }
-
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-
-    }
-    //Fim do Botão
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }

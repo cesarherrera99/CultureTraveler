@@ -8,11 +8,11 @@ public class PHC {
     private String descricao;
     private int idimagem;
 
-        public PHC(String nome, String descricao, int idimagem) {
-            this.nome = nome;
-            this.descricao = descricao;
-            this.idimagem = idimagem;
-        }
+    public PHC(String nome, String descricao, int idimagem) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.idimagem = idimagem;
+    }
 
     public String getNome() {
         return nome;

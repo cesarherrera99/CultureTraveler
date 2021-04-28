@@ -1,15 +1,16 @@
 package com.example.culturetraveler;
 
-import android.media.Image;
-
 public class PHC {
 
+
     private String nome;
+    private String morada;
     private String descricao;
     private int idimagem;
 
     public PHC(String nome, String descricao, int idimagem) {
         this.nome = nome;
+        this.morada = morada;
         this.descricao = descricao;
         this.idimagem = idimagem;
     }
@@ -20,6 +21,14 @@ public class PHC {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getMorada() {
+        return morada;
+    }
+
+    public void setMorada(String morada) {
+        this.morada = morada;
     }
 
     public String getDescricao() {

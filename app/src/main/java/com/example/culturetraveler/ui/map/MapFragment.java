@@ -41,6 +41,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
@@ -59,7 +67,9 @@ public class MapFragment extends Fragment
     }
 
     //vars
-    private FirebaseDatabase mPhc;
+    private FirebaseDatabase mFirebaseDataBase;
+    private PlacesClient placesClient;
+    private AutocompleteSessionToken token;
     private GoogleMap mGoogleMap;
     private MapView mMapView;
     private boolean mLocationPermission = false;
@@ -83,11 +93,14 @@ public class MapFragment extends Fragment
         mSerachText = (AutoCompleteTextView) view.findViewById(R.id.input_search);
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
 
-        mPhc = FirebaseDatabase.getInstance();
+        getLocationPermission();
+
+        mFirebaseDataBase = FirebaseDatabase.getInstance();
 
         Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
+        placesClient = Places.createClient(getActivity());
+        token = AutocompleteSessionToken.newInstance();
 
-        getLocationPermission();
 
         return view;
     }
@@ -122,6 +135,41 @@ public class MapFragment extends Fragment
             mGoogleMap.setMyLocationEnabled(true);
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             mGoogleMap.getUiSettings().setCompassEnabled(false);
+
+            //teste de marker cesar
+            FindAutocompletePredictionsRequest mPredictionsRequest = FindAutocompletePredictionsRequest.builder()
+                    .setCountry("PT")
+                    .setLocationBias(RectangularBounds.newInstance(new LatLng(41.133486, -8.573132), new LatLng(41.175115, -8.657916)))
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                    .setSessionToken(token)
+                    .setQuery("casa da musica")
+                    .build();
+
+            placesClient.findAutocompletePredictions(mPredictionsRequest)
+                    .addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
+                        @Override
+                        public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
+                            if (task.isSuccessful()){
+                                FindAutocompletePredictionsResponse mPredictionsResponse = task.getResult();
+                                if (mPredictionsResponse != null){
+                                    List<AutocompletePrediction> predictions = mPredictionsResponse.getAutocompletePredictions();
+                                    for (AutocompletePrediction p : predictions){
+                                        Log.i(TAG, p.getFullText(null).toString());
+                                        Log.i(TAG, p.getFullText(null).toString());
+
+                                        List<Place.Type> placeTypes = p.getPlaceTypes();
+                                        for (Place.Type type : placeTypes){
+                                            Log.i(TAG,"tipo: " + type.name());
+                                        }
+                                    }
+
+                                }
+                            } else {
+                                Log.e(TAG, "getDeviceLocation: SecurityException: erro");
+                            }
+                        }
+                    });
+            //fim teste de marker
 
             init();
         }
@@ -220,7 +268,7 @@ public class MapFragment extends Fragment
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
 
         if (!title.equals("My Location")){
-            MarkerOptions options = new MarkerOptions().position(latLng).snippet(" "+ latLng);
+            MarkerOptions options = new MarkerOptions().position(latLng).title(title).snippet("Coordenadas: " + latLng.toString());
             mGoogleMap.addMarker(options);
         }
     }

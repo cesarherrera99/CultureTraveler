@@ -43,6 +43,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
@@ -50,6 +51,8 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -74,6 +77,7 @@ public class MapFragment extends Fragment
     Activity activity;
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     List<Place.Field> fields;
+
     private MapViewModel mViewModel;
 
     public static MapFragment newInstance() {
@@ -103,6 +107,7 @@ public class MapFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
         activity = getActivity();
         mSerachText = (EditText) view.findViewById(R.id.input_search);
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
@@ -149,41 +154,7 @@ public class MapFragment extends Fragment
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             mGoogleMap.getUiSettings().setCompassEnabled(false);
 
-            //teste de marker cesar
-            FindAutocompletePredictionsRequest mPredictionsRequest = FindAutocompletePredictionsRequest.builder()
-                    .setCountry("PT")
-                    .setLocationBias(RectangularBounds.newInstance(new LatLng(41.133486, -8.573132), new LatLng(41.175115, -8.657916)))
-                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                    .setSessionToken(token)
-                    .setQuery("casa da musica")
-                    .build();
-
-            placesClient.findAutocompletePredictions(mPredictionsRequest)
-                    .addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
-                        @Override
-                        public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
-                            if (task.isSuccessful()){
-                                FindAutocompletePredictionsResponse mPredictionsResponse = task.getResult();
-                                if (mPredictionsResponse != null){
-                                    List<AutocompletePrediction> predictions = mPredictionsResponse.getAutocompletePredictions();
-                                    for (AutocompletePrediction p : predictions){
-                                        Log.i(TAG, p.getFullText(null).toString());
-                                        Log.i(TAG, p.getFullText(null).toString());
-
-                                        List<Place.Type> placeTypes = p.getPlaceTypes();
-                                        for (Place.Type type : placeTypes){
-                                            Log.i(TAG,"tipo: " + type.name());
-                                        }
-                                    }
-
-                                }
-                            } else {
-                                Log.e(TAG, "getDeviceLocation: SecurityException: erro");
-                            }
-                        }
-                    });
-            //fim teste de marker
-
+            markers();
             init();
         }
     }
@@ -231,7 +202,7 @@ public class MapFragment extends Fragment
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a Location: "+ address.toString());
 
-            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
+            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
         }
     }
 
@@ -249,15 +220,15 @@ public class MapFragment extends Fragment
                             Location currentLocation = (Location) task.getResult();
                             if (mAnimated == 0){
                                 try {
-                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                                 }catch (NullPointerException e){
-                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                    moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                                 }
                             }else{
                                 try {
-                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                                 }catch (NullPointerException e){
-                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+                                    animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                                 }
                             }
                         }else {
@@ -271,21 +242,71 @@ public class MapFragment extends Fragment
         }
     }
 
+    //Markers
+    public void markers(){
+        FindAutocompletePredictionsRequest mPredictionsRequest = FindAutocompletePredictionsRequest.builder()
+                .setCountry("PT")
+                .setLocationBias(RectangularBounds.newInstance(new LatLng(41.133486, -8.573132), new LatLng(41.175115, -8.657916)))
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                .setSessionToken(token)
+                .setQuery("casa da musica")
+                .build();
+
+        placesClient.findAutocompletePredictions(mPredictionsRequest)
+                .addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
+                        if (task.isSuccessful()){
+                            FindAutocompletePredictionsResponse mPredictionsResponse = task.getResult();
+                            if (mPredictionsResponse != null){
+                                List<AutocompletePrediction> predictions = mPredictionsResponse.getAutocompletePredictions();
+                                for (AutocompletePrediction p : predictions){
+                                    Log.i(TAG, p.getFullText(null).toString());
+                                    Log.i(TAG, p.getFullText(null).toString());
+
+                                        /*List<Place.Type> placeTypes = p.getPlaceTypes();
+                                        for (Place.Type type : placeTypes){
+                                            Log.i(TAG,"tipo: " + type.name());
+                                        }*/
+
+                                    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.OPENING_HOURS, Place.Field.PHONE_NUMBER, Place.Field.RATING);
+                                    FetchPlaceRequest request = FetchPlaceRequest.builder(p.getPlaceId(), fields)
+                                            .setSessionToken(token)
+                                            .build();
+
+                                    placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+                                        @Override
+                                        public void onSuccess(FetchPlaceResponse response) {
+                                            Place place = response.getPlace();
+                                            LatLng latLng = place.getLatLng();
+                                            mGoogleMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(place.getName())
+                                                    .snippet("Morada: "+ place.getAddress()));
+                                        }
+                                    });
+                                }
+
+                            }
+                        } else {
+                            Log.e(TAG, "getDeviceLocation: SecurityException: erro");
+                        }
+                    }
+                });
+    }
+    //Fim Markers
+
+
 
     //Inicio de Movimentos da Camara
     //Camara estatica
-    public void moveCamera(LatLng latLng, float zoom, String title){
+    public void moveCamera(LatLng latLng, float zoom){
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 
     //Camara animada
-    public void animatedCamera(LatLng latLng, float zoom, String title){
+    public void animatedCamera(LatLng latLng, float zoom){
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-
-        if (!title.equals("My Location")){
-            MarkerOptions options = new MarkerOptions().position(latLng).title(title).snippet("Coordenadas: " + latLng.toString());
-            mGoogleMap.addMarker(options);
-        }
     }
     //Fim de Movimentos da Camara
 
@@ -344,6 +365,7 @@ public class MapFragment extends Fragment
 
     }
 
+    //Função de autocomplete searchBar
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

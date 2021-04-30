@@ -5,6 +5,8 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,12 +24,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.culturetraveler.R;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -49,17 +53,27 @@ import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class MapFragment extends Fragment
         implements
         OnConnectionFailedListener,
         OnMapReadyCallback {
 
+    Activity activity;
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    List<Place.Field> fields;
     private MapViewModel mViewModel;
 
     public static MapFragment newInstance() {
@@ -76,7 +90,7 @@ public class MapFragment extends Fragment
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     //widgets
-    private AutoCompleteTextView mSerachText;
+    private EditText mSerachText;
     private ImageView mGps;
 
     private static final String TAG = "MyActivity";
@@ -89,8 +103,8 @@ public class MapFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-
-        mSerachText = (AutoCompleteTextView) view.findViewById(R.id.input_search);
+        activity = getActivity();
+        mSerachText = (EditText) view.findViewById(R.id.input_search);
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
 
         getLocationPermission();
@@ -100,7 +114,6 @@ public class MapFragment extends Fragment
         Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
         placesClient = Places.createClient(getActivity());
         token = AutocompleteSessionToken.newInstance();
-
 
         return view;
     }
@@ -178,17 +191,19 @@ public class MapFragment extends Fragment
     //Função para a utilização de Widgets (SearchBar, MyLocationButton,....)
     public void init(){
 
-        mSerachText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mSerachText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN
-                        || event.getAction() == KeyEvent.KEYCODE_ENTER){
-                    //executar nossa procura de um PHC
-                    geoLocate();
-                }
-                return false;
+            public void onClick(View v) {
+                fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .setLocationBias(RectangularBounds.newInstance(
+                                new LatLng(41.133486, -8.573132),
+                                new LatLng(41.175115, -8.657916)))
+                        .setCountry("PT").build(getActivity());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
 
@@ -203,12 +218,12 @@ public class MapFragment extends Fragment
     }
 
     //Função de procura de um PHC no searchBar
-    public void geoLocate(){
+    public void geoLocate(String place){
         String searchString = mSerachText.getText().toString();
         Geocoder geocoder = new Geocoder(getActivity());
         List<Address> list = new ArrayList<>();
         try {
-            list = geocoder.getFromLocationName(searchString, 1);
+            list = geocoder.getFromLocationName(place, 1);
         }catch (IOException e){
             Log.e(TAG, "geolocate: IOExtetion: "+ e.getMessage());
         }
@@ -328,4 +343,26 @@ public class MapFragment extends Fragment
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                mSerachText.setText(place.getName());
+                geoLocate(place.getName());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Toast.makeText(activity, status.toString(),Toast.LENGTH_SHORT).show();
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // O utilizador cancela a procura
+                Toast.makeText(activity, "Local não selecionado",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }

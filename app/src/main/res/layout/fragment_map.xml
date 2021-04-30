@@ -23,7 +23,7 @@
             android:layout_marginLeft="15dp"
             android:src="@drawable/ic_lupa"/>
 
-        <AutoCompleteTextView
+        <EditText
             android:id="@+id/input_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,8 +31,10 @@
             android:layout_toRightOf="@+id/lupa"
             android:layout_marginRight="15dp"
             android:hint="Procurar PHC"
+            android:textColorHint="@color/quantum_grey"
+            android:focusableInTouchMode="false"
             android:textColor="@color/black"
-            android:textSize="20dp"
+            android:textSize="12dp"
             android:imeOptions="actionSearch"/>
     </RelativeLayout>
 

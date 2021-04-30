@@ -2,7 +2,6 @@ package com.example.culturetraveler;
 
 public class PHC {
 
-
     private String nome;
     private String morada;
     private String descricao;

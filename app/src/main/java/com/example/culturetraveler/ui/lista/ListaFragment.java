@@ -97,9 +97,7 @@ public class ListaFragment extends Fragment {
         listaPHC.add(new PHC("Serra do Pilar", "Um miradouro único para a cidade do Porto",R.drawable.serrapilar));
         listaPHC.add(new PHC("Palácio de Cristal", "Um dos espaços verdes mais visitados pelos habitantes do Porto e não só",R.drawable.palaciocristal));
         listaPHC.add(new PHC("Casa da Música", "Um dos edíficios mais originais e belos da cidade do Porto",R.drawable.casadamusica));
-        listaPHC.add(new PHC("Parque da Cidade", "Conhecido como o pulmão da cidade",R.drawable.parquedacidade));
         listaPHC.add(new PHC("Foz do Porto", "A zona onde desagua o rio Douro",R.drawable.fozporto));
-        listaPHC.add(new PHC("Café Majestic", "O café mais histórico da cidade do Porto",R.drawable.majestic));
-
+        listaPHC.add(new PHC("Parque da Cidade ", "Conhecido como o pulmão da cidade \n\n\n\n\n",R.drawable.parquedacidade));
     }
 }

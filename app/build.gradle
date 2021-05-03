@@ -46,14 +46,24 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.7.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    //Utils
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+
+    // Firestore Firestore
+    implementation 'com.google.firebase:firebase-firestore:22.1.2'
+
     //google maps api
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+
+    //google directions api
+    implementation 'com.google.maps:google-maps-services:0.18.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
     //google places api
     implementation 'com.google.android.gms:play-services-places:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    //matrix api
-    implementation 'org.slf4j:slf4j-simple:1.7.25'
 }

@@ -39,6 +39,7 @@ public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHol
         holder.txtNome.setText(listaPHC.get(position).getNome());
         holder.txtinformacao.setText(listaPHC.get(position).getDescricao());
         holder.imagem.setImageResource(listaPHC.get(position).getIdimagem());
+        holder.direcoes.setImageResource(listaPHC.get(position).getDirecoes());
 
     }
 
@@ -63,14 +64,16 @@ public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHol
 
     public class ListaViewHolder extends RecyclerView.ViewHolder {
         TextView txtNome, txtinformacao;
-        ImageView imagem;
+        ImageView imagem, direcoes;
 
         public ListaViewHolder(View itemView) {
             super(itemView);
             txtNome = (TextView) itemView.findViewById(R.id.idnome);
             txtinformacao = (TextView) itemView.findViewById(R.id.idinfo);
             imagem = (ImageView) itemView.findViewById(R.id.idimagem);
+            direcoes = (ImageView) itemView.findViewById(R.id.direcoes);
 
         }
+
     }
 }

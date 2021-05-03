@@ -84,21 +84,21 @@ public class ListaFragment extends Fragment {
 
     private void definirlista() {
 
-        listaPHC.add(new PHC("Avenida dos Aliados", "O centro e o coração da cidade do Porto",R.drawable.aliados));
-        listaPHC.add(new PHC("Mercado do Bolhão", "A rua mais comercial do Porto",R.drawable.mercado_bolhao));
-        listaPHC.add(new PHC("Rua de Santa Catarina", "Pensado ao pormenor para acolher os comerciantes e os clientes",R.drawable.santa_catarina));
-        listaPHC.add(new PHC("Galerias de Paris", "Um dos locais mais importantes da noite do Porto",R.drawable.galerias));
-        listaPHC.add(new PHC("Livraria Lello", "Considerada uma das mais lindas livrarias do mundo",R.drawable.lello));
-        listaPHC.add(new PHC("Torre dos Clérigos", "Considerada por muitos o ex-líbris da cidade",R.drawable.clerigos));
-        listaPHC.add(new PHC("Palácio da Bolsa", "Estilo neoclássico e inspirado no estilo mourisco",R.drawable.palacio_bolsa));
-        listaPHC.add(new PHC("Igreja de São Francisco", "A mais bela da cidade do Porto",R.drawable.igreja));
-        listaPHC.add(new PHC("Sé do Porto", "Construída para proteger a cidade dos invasores",R.drawable.sedoporto));
-        listaPHC.add(new PHC("Ribeira", "Um dos locais mais antigos e típicos do Porto",R.drawable.ribeira));
-        listaPHC.add(new PHC("Serra do Pilar", "Um miradouro único para a cidade do Porto",R.drawable.serrapilar));
-        listaPHC.add(new PHC("Palácio de Cristal", "Um dos espaços verdes mais visitados pelos habitantes do Porto e não só",R.drawable.palaciocristal));
-        listaPHC.add(new PHC("Casa da Música", "Um dos edíficios mais originais e belos da cidade do Porto",R.drawable.casadamusica));
-        listaPHC.add(new PHC("Foz do Porto", "A zona onde desagua o rio Douro",R.drawable.fozporto));
-        listaPHC.add(new PHC("Parque da Cidade ", "Conhecido como o pulmão da cidade \n\n\n\n\n",R.drawable.parquedacidade));
+        listaPHC.add(new PHC("Avenida dos Aliados", "O centro e o coração da cidade do Porto",R.drawable.aliados, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Mercado do Bolhão", "A rua mais comercial do Porto",R.drawable.mercado_bolhao, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Rua de Santa Catarina", "Pensado ao pormenor para acolher \nos comerciantes e os clientes",R.drawable.santa_catarina, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Galerias de Paris", "Um dos locais mais importantes da \nnoite do Porto",R.drawable.galerias, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Livraria Lello", "Considerada uma das mais lindas \nlivrarias do mundo",R.drawable.lello, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Torre dos Clérigos", "Considerada por muitos o ex-líbris \nda cidade",R.drawable.clerigos,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Palácio da Bolsa", "Estilo neoclássico e inspirado no \nestilo mourisco",R.drawable.palacio_bolsa, R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Igreja de São Francisco", "A mais bela da cidade do Porto",R.drawable.igreja,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Sé do Porto", "Construída para proteger a cidade \ndos invasores",R.drawable.sedoporto,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Ribeira", "Um dos locais mais antigos e típicos \ndo Porto",R.drawable.ribeira,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Serra do Pilar", "Um miradouro único para a cidade \ndo Porto",R.drawable.serrapilar,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Palácio de Cristal", "Um dos espaços verdes mais \nvisitados pelos habitantes do Porto e não só",R.drawable.palaciocristal,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Casa da Música", "Um dos edíficios mais originais e \nbelos da cidade do Porto",R.drawable.casadamusica,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Foz do Porto", "A zona onde desagua o rio Douro",R.drawable.fozporto,R.drawable.ic_directions_24));
+        listaPHC.add(new PHC("Parque da Cidade ", "Conhecido como o pulmão da cidade \n\n\n\n\n",R.drawable.parquedacidade,R.drawable.ic_directions_24));
 
     }
 }

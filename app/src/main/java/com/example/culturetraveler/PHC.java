@@ -1,19 +1,39 @@
 package com.example.culturetraveler;
 
+import android.location.Geocoder;
+
+import com.google.android.gms.maps.model.LatLng;
+
 public class PHC {
 
     private String nome;
     private String morada;
     private String descricao;
+    private double rating;
+    private double latitud;
+    private double longitud;
     private int idimagem;
     private int direcoes;
 
-    public PHC(String nome, String descricao, int idimagem, int direcoes) {
+    public PHC(String nome, String morada, String descricao, Double rating, Double latitud, Double longitud, int idimagem) {
         this.nome = nome;
         this.morada = morada;
         this.descricao = descricao;
+        this.rating = rating;
+        this.latitud = latitud;
+        this.longitud = longitud;
+        this.idimagem = idimagem;
+    }
+
+    public PHC(String nome, String descricao, int idimagem, int direcoes) {
+        this.nome = nome;
+        this.descricao = descricao;
         this.idimagem = idimagem;
         this.direcoes = direcoes;
+    }
+
+    public PHC() {
+
     }
 
 
@@ -39,6 +59,30 @@ public class PHC {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(double latitud) {
+        this.latitud = latitud;
+    }
+
+    public double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(double longitud) {
+        this.longitud = longitud;
     }
 
     public int getIdimagem() {

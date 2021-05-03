@@ -65,7 +65,7 @@ public class ListaFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerid);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        definirlista();
+        //definirlista();
 
         ListaAdapter adapter = new ListaAdapter(listaPHC);
         recyclerView.setAdapter(adapter);

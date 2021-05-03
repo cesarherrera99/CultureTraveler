@@ -30,7 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.culturetraveler.CustomInfoWindowAdapter;
+import com.example.culturetraveler.PHC;
 import com.example.culturetraveler.R;
+import com.example.culturetraveler.RegistoActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
@@ -61,7 +63,11 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,6 +94,7 @@ public class MapFragment extends Fragment
 
     //vars
     private FirebaseDatabase mFirebaseDataBase;
+    private DatabaseReference mRef;
     private PlacesClient placesClient;
     private AutocompleteSessionToken token;
     private GoogleMap mGoogleMap;
@@ -115,8 +122,6 @@ public class MapFragment extends Fragment
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
 
         getLocationPermission();
-
-        mFirebaseDataBase = FirebaseDatabase.getInstance();
 
         Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
         placesClient = Places.createClient(getActivity());
@@ -156,7 +161,6 @@ public class MapFragment extends Fragment
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             mGoogleMap.getUiSettings().setCompassEnabled(false);
 
-            markers();
             init();
         }
     }
@@ -244,77 +248,6 @@ public class MapFragment extends Fragment
         }
     }
 
-    //Markers
-    public void markers(){
-        FindAutocompletePredictionsRequest mPredictionsRequest = FindAutocompletePredictionsRequest.builder()
-                .setCountry("PT")
-                .setLocationBias(RectangularBounds.newInstance(new LatLng(41.133486, -8.573132), new LatLng(41.175115, -8.657916)))
-                .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                .setSessionToken(token)
-                .setQuery("casa da musica")
-                .build();
-
-        placesClient.findAutocompletePredictions(mPredictionsRequest)
-                .addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
-                    @Override
-                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
-                        if (task.isSuccessful()){
-                            FindAutocompletePredictionsResponse mPredictionsResponse = task.getResult();
-                            if (mPredictionsResponse != null){
-                                List<AutocompletePrediction> predictions = mPredictionsResponse.getAutocompletePredictions();
-                                for (AutocompletePrediction p : predictions){
-                                    Log.i(TAG, p.getFullText(null).toString());
-                                    Log.i(TAG, p.getFullText(null).toString());
-
-                                        /*List<Place.Type> placeTypes = p.getPlaceTypes();
-                                        for (Place.Type type : placeTypes){
-                                            Log.i(TAG,"tipo: " + type.name());
-                                        }*/
-
-                                    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.RATING, Place.Field.WEBSITE_URI);
-                                    FetchPlaceRequest request = FetchPlaceRequest.builder(p.getPlaceId(), fields)
-                                            .setSessionToken(token)
-                                            .build();
-
-                                    placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
-                                        @Override
-                                        public void onSuccess(FetchPlaceResponse response) {
-                                            Place place = response.getPlace();
-                                            LatLng latLng = place.getLatLng();
-                                            mGoogleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getActivity()));
-
-                                            if (place != null){
-                                                try {
-                                                    String snippet = "Endereço: " + place.getAddress() + "\n" +
-                                                            "Numero de Telemovel: " + place.getPhoneNumber() + "\n" +
-                                                            "Website: " + place.getWebsiteUri() + "\n" +
-                                                            "Rating: " + place.getRating() + "\n";
-
-                                                    mMarker = mGoogleMap.addMarker(new MarkerOptions()
-                                                            .position(latLng)
-                                                            .title(place.getName())
-                                                            .snippet(snippet));
-                                                }catch (NullPointerException e){
-                                                    Log.e(TAG, "No Info");
-                                                }
-                                            }else {
-                                                mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(place.getName()));
-                                            }
-                                        }
-                                    });
-                                }
-
-                            }
-                        } else {
-                            Log.e(TAG, "getDeviceLocation: SecurityException: erro");
-                        }
-                    }
-                });
-    }
-    //Fim Markers
-
-
-
     //Inicio de Movimentos da Camara
     //Camara estatica
     public void moveCamera(LatLng latLng, float zoom){
@@ -375,6 +308,34 @@ public class MapFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+
+        mFirebaseDataBase = FirebaseDatabase.getInstance();
+        mRef = mFirebaseDataBase.getReference();
+
+        mRef.child("phc").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    mGoogleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getActivity()));
+                    PHC phc = snapshot.getValue(PHC.class);
+                    LatLng latLng = new LatLng(phc.getLatitud(), phc.getLongitud());
+
+                    String snippet = "Morada: " + phc.getMorada() + "\n" +
+                            "Descrição: " + phc.getDescricao() + "\n" +
+                            "Rating: " + phc.getRating();
+
+                    mMarker = mGoogleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(phc.getNome())
+                            .snippet(snippet));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override

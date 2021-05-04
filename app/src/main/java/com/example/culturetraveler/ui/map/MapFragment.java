@@ -147,7 +147,6 @@ public class MapFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        //googleMap.addMarker(new MarkerOptions().position(new LatLng(41.14961, -8.61099)).title("Porto").snippet("go here"));
 
         if (mLocationPermission) {
             mAnimated = 0;
@@ -171,7 +170,7 @@ public class MapFragment extends Fragment
         mSerachText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+                fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.WEBSITE_URI);
 
                 // Start the autocomplete intent.
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
@@ -195,12 +194,11 @@ public class MapFragment extends Fragment
     }
 
     //Função de procura de um PHC no searchBar
-    public void geoLocate(String place){
-        String searchString = mSerachText.getText().toString();
+    public void geoLocate(String nome, Place place){
         Geocoder geocoder = new Geocoder(getActivity());
         List<Address> list = new ArrayList<>();
         try {
-            list = geocoder.getFromLocationName(place, 1);
+            list = geocoder.getFromLocationName(nome, 1);
         }catch (IOException e){
             Log.e(TAG, "geolocate: IOExtetion: "+ e.getMessage());
         }
@@ -208,7 +206,7 @@ public class MapFragment extends Fragment
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a Location: "+ address.toString());
 
-            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
+            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, place);
         }
     }
 
@@ -257,6 +255,17 @@ public class MapFragment extends Fragment
     //Camara animada
     public void animatedCamera(LatLng latLng, float zoom){
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+    }
+    public void animatedCamera(LatLng latLng, float zoom, Place place){
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+        String snippet = "Morada: " + place.getAddress() + "\n" +
+                    "Website: " + place.getWebsiteUri() + "\n" +
+                    "Rating: " + place.getRating();
+        mMarker = mGoogleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(place.getName())
+                .snippet(snippet));
+
     }
     //Fim de Movimentos da Camara
 
@@ -352,7 +361,7 @@ public class MapFragment extends Fragment
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 mSerachText.setText(place.getName());
-                geoLocate(place.getName());
+                geoLocate(place.getName(), place);
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);

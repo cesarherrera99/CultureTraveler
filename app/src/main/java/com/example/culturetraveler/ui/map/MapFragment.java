@@ -33,11 +33,14 @@ import com.example.culturetraveler.CustomInfoWindowAdapter;
 import com.example.culturetraveler.PHC;
 import com.example.culturetraveler.R;
 import com.example.culturetraveler.RegistoActivity;
+import com.example.culturetraveler.utility.DirectionPointListener;
+import com.example.culturetraveler.utility.GetPathFromLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -46,6 +49,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -84,6 +88,7 @@ public class MapFragment extends Fragment
 
 
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private boolean isDirection = false;
     List<Place.Field> fields;
 
     private MapViewModel mViewModel;
@@ -102,10 +107,11 @@ public class MapFragment extends Fragment
     private boolean mLocationPermission = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     public Marker mMarker;
+    LatLng source, destination;
 
     //widgets
     private EditText mSerachText;
-    private ImageView mGps;
+    private ImageView mGps, imgDirection;
 
     private static final String TAG = "MyActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -120,14 +126,58 @@ public class MapFragment extends Fragment
 
         mSerachText = (EditText) view.findViewById(R.id.input_search);
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
+        imgDirection = view.findViewById(R.id.imageView3);
+
+        imgDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isDirection){
+                    isDirection = true;
+                    imgDirection.setImageResource(R.drawable.ic_cancel_24);
+                    getDirectionApiCall();
+                }else {
+                    isDirection = false;
+                    imgDirection.setImageResource(R.drawable.ic_direction_24);
+                    clearDirection();
+                }
+
+            }
+        });
 
         getLocationPermission();
+
+        mFirebaseDataBase = FirebaseDatabase.getInstance();
 
         Places.initialize(getActivity(), "AIzaSyDx1gUQYv705FdeXUCWJySPwLKfOn9R8Wo");
         placesClient = Places.createClient(getActivity());
         token = AutocompleteSessionToken.newInstance();
 
         return view;
+    }
+
+    private void clearDirection() {
+        mGoogleMap.clear();
+        geoLocate(mSerachText.getText().toString());
+    }
+
+    private void getDirectionApiCall() {
+        //source = new LatLng(41.133486, -8.573132);
+
+        new GetPathFromLocation(source, destination, new DirectionPointListener() {
+            @Override
+            public void onPath(PolylineOptions polyLine) {
+                mGoogleMap.addPolyline(polyLine);
+
+                CameraUpdate center=
+                        CameraUpdateFactory.newLatLng(source);
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(13);
+
+                mGoogleMap.moveCamera(center);
+                mGoogleMap.animateCamera(zoom);
+            }
+        }).execute();
+
+
     }
 
     @Override
@@ -194,19 +244,21 @@ public class MapFragment extends Fragment
     }
 
     //Função de procura de um PHC no searchBar
-    public void geoLocate(String nome, Place place){
+    public void geoLocate(String place){
+        String searchString = mSerachText.getText().toString();
         Geocoder geocoder = new Geocoder(getActivity());
         List<Address> list = new ArrayList<>();
         try {
-            list = geocoder.getFromLocationName(nome, 1);
-        }catch (IOException e){
-            Log.e(TAG, "geolocate: IOExtetion: "+ e.getMessage());
+            list = geocoder.getFromLocationName(place, 1);
+        } catch (IOException e) {
+            Log.e(TAG, "geolocate: IOExtetion: " + e.getMessage());
         }
-        if (list.size() > 0){
+        if (list.size() > 0) {
             Address address = list.get(0);
-            Log.d(TAG, "geoLocate: found a Location: "+ address.toString());
-
-            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, place);
+            Log.d(TAG, "geoLocate: found a Location: " + address.toString());
+            destination = new LatLng(address.getLatitude(), address.getLongitude());
+            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
+            mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())).title(place));
         }
     }
 
@@ -225,14 +277,18 @@ public class MapFragment extends Fragment
                             if (mAnimated == 0){
                                 try {
                                     moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                                    source = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                                 }catch (NullPointerException e){
                                     moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                                    source = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                                 }
                             }else{
                                 try {
                                     animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                                    source = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                                 }catch (NullPointerException e){
                                     animatedCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                                    source = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                                 }
                             }
                         }else {
@@ -259,8 +315,8 @@ public class MapFragment extends Fragment
     public void animatedCamera(LatLng latLng, float zoom, Place place){
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
         String snippet = "Morada: " + place.getAddress() + "\n" +
-                    "Website: " + place.getWebsiteUri() + "\n" +
-                    "Rating: " + place.getRating();
+                "Website: " + place.getWebsiteUri() + "\n" +
+                "Rating: " + place.getRating();
         mMarker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(place.getName())
@@ -361,15 +417,16 @@ public class MapFragment extends Fragment
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 mSerachText.setText(place.getName());
-                geoLocate(place.getName(), place);
+
+                geoLocate(place.getName());
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
-                Toast.makeText(getActivity(), status.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), status.toString(), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 // O utilizador cancela a procura
-                Toast.makeText(getActivity(), "Local não selecionado",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Local não selecionado", Toast.LENGTH_SHORT).show();
             }
         }
     }

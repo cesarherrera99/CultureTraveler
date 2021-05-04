@@ -46,7 +46,7 @@
             android:layout_alignStart="@id/idnome"
             android:layout_marginStart="339dp"
             android:layout_marginTop="4dp"
-            tools:srcCompat="@drawable/ic_directions_24" />
+            tools:srcCompat="@drawable/ic_direction_24" />
 
         <TextView
             android:id="@+id/idinfo"

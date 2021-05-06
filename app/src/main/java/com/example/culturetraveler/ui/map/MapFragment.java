@@ -128,22 +128,6 @@ public class MapFragment extends Fragment
         mGps = (ImageView) view.findViewById(R.id.ic_gps);
         imgDirection = view.findViewById(R.id.imageView3);
 
-        imgDirection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!isDirection){
-                    isDirection = true;
-                    imgDirection.setImageResource(R.drawable.ic_cancel_24);
-                    getDirectionApiCall();
-                }else {
-                    isDirection = false;
-                    imgDirection.setImageResource(R.drawable.ic_direction_24);
-                    clearDirection();
-                }
-
-            }
-        });
-
         getLocationPermission();
 
         mFirebaseDataBase = FirebaseDatabase.getInstance();
@@ -176,8 +160,6 @@ public class MapFragment extends Fragment
                 mGoogleMap.animateCamera(zoom);
             }
         }).execute();
-
-
     }
 
     @Override
@@ -230,6 +212,22 @@ public class MapFragment extends Fragment
                                 new LatLng(41.175115, -8.657916)))
                         .setCountry("PT").build(getActivity());
                 startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            }
+        });
+
+        imgDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isDirection){
+                    isDirection = true;
+                    imgDirection.setImageResource(R.drawable.ic_close);
+                    getDirectionApiCall();
+                }else {
+                    isDirection = false;
+                    imgDirection.setImageResource(R.drawable.ic_go);
+                    clearDirection();
+                }
+
             }
         });
 
@@ -393,6 +391,7 @@ public class MapFragment extends Fragment
                             .position(latLng)
                             .title(phc.getNome())
                             .snippet(snippet));
+                    //destination = latLng;
                 }
             }
 

@@ -38,47 +38,10 @@
                 android:ellipsize="end"
                 android:maxLines="10"
                 android:textSize="16dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:layout_marginBottom="10dp"/>
         </LinearLayout>
 
     </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/linear_window"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:elevation="5dp"
-        android:background="@drawable/black_border">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerInParent="true"
-            android:id="@+id/ic_close"
-            android:src="@drawable/ic_close"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/linear_window"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="80dp"
-        android:elevation="5dp"
-        android:background="@drawable/black_border">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerInParent="true"
-            android:id="@+id/ic_go"
-            android:src="@drawable/ic_go"/>
-
-    </RelativeLayout>
 
 </RelativeLayout>

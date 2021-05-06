@@ -3,6 +3,7 @@ package com.example.culturetraveler.ui.lista;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -73,8 +74,7 @@ public class ListaFragment extends Fragment {
         adapter.setOnCliclListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), ""+listaPHC.get(recyclerView.getChildAdapterPosition(view)).getNome(),
-                        Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(view).navigate(R.id.navigation_map);
             }
         });
 

@@ -142,6 +142,7 @@ public class MapFragment extends Fragment
     private void clearDirection() {
         mGoogleMap.clear();
         geoLocate(mSerachText.getText().toString());
+        markers();
     }
 
     private void getDirectionApiCall() {
@@ -375,6 +376,10 @@ public class MapFragment extends Fragment
         mFirebaseDataBase = FirebaseDatabase.getInstance();
         mRef = mFirebaseDataBase.getReference();
 
+        markers();
+    }
+
+    public void markers(){
         mRef.child("phc").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

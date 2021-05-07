@@ -9,6 +9,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +21,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private Button registo, login_B;
     private EditText editTextEmail_L, editTextPassword_L;
+    private TextView forgetPassword;
 
     private FirebaseAuth mAuth;
 
@@ -36,9 +38,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login_B.setOnClickListener(this);
         editTextEmail_L = findViewById(R.id.email_L_ETxt);
         editTextPassword_L = findViewById(R.id.password_L_ETxt);
+        forgetPassword = (TextView) findViewById(R.id.forgetpassword);
 
         checkIfUserIsLoggedIn();
+
+        forgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent (LoginActivity.this, ResetPasswordActivity.class));
+            }
+        });
+
+
     }
+
 
     @Override
     public void onClick(View v) {
@@ -51,6 +64,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
     }
+
+
 
     private void userLogin() {
         String email = editTextEmail_L.getText().toString().trim();

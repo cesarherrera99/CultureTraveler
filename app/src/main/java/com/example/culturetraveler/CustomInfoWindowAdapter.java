@@ -53,7 +53,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         mClose = (ImageView) view.findViewById(R.id.ic_close);
         mGo = (ImageView) view.findViewById(R.id.ic_go);
         Marker mMarker = marker;
-
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,11 +61,9 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 }
             }
         });
-
         mGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
     }*/

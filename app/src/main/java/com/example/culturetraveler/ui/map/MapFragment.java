@@ -139,30 +139,6 @@ public class MapFragment extends Fragment
         return view;
     }
 
-    private void clearDirection() {
-        mGoogleMap.clear();
-        geoLocate(mSerachText.getText().toString());
-        markers();
-    }
-
-    private void getDirectionApiCall() {
-        //source = new LatLng(41.133486, -8.573132);
-
-        new GetPathFromLocation(source, destination, new DirectionPointListener() {
-            @Override
-            public void onPath(PolylineOptions polyLine) {
-                mGoogleMap.addPolyline(polyLine);
-
-                CameraUpdate center=
-                        CameraUpdateFactory.newLatLng(source);
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(13);
-
-                mGoogleMap.moveCamera(center);
-                mGoogleMap.animateCamera(zoom);
-            }
-        }).execute();
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -243,12 +219,11 @@ public class MapFragment extends Fragment
     }
 
     //Função de procura de um PHC no searchBar
-    public void geoLocate(String place){
-        String searchString = mSerachText.getText().toString();
+    public void geoLocate(String nome, Place place){
         Geocoder geocoder = new Geocoder(getActivity());
         List<Address> list = new ArrayList<>();
         try {
-            list = geocoder.getFromLocationName(place, 1);
+            list = geocoder.getFromLocationName(nome, 1);
         } catch (IOException e) {
             Log.e(TAG, "geolocate: IOExtetion: " + e.getMessage());
         }
@@ -256,9 +231,35 @@ public class MapFragment extends Fragment
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a Location: " + address.toString());
             destination = new LatLng(address.getLatitude(), address.getLongitude());
-            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM);
-            mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())).title(place));
+            animatedCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, place);
         }
+    }
+
+
+    private void clearDirection() {
+        mGoogleMap.clear();
+        getDiviceLocation(mAnimated);
+        markers();
+    }
+
+    private void getDirectionApiCall() {
+        //source = new LatLng(41.133486, -8.573132);
+
+        new GetPathFromLocation(source, destination, new DirectionPointListener() {
+            @Override
+            public void onPath(PolylineOptions polyLine) {
+                mGoogleMap.addPolyline(polyLine);
+
+                CameraUpdate center=
+                        CameraUpdateFactory.newLatLng(source);
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(14);
+
+                mGoogleMap.moveCamera(center);
+                mGoogleMap.animateCamera(zoom);
+
+                mMarker.hideInfoWindow();
+            }
+        }).execute();
     }
 
 
@@ -273,7 +274,7 @@ public class MapFragment extends Fragment
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()){
                             Location currentLocation = (Location) task.getResult();
-                            if (mAnimated == 0){
+                            if (mAnimated == 0 && currentLocation != null){
                                 try {
                                     moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                                     source = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -396,7 +397,7 @@ public class MapFragment extends Fragment
                             .position(latLng)
                             .title(phc.getNome())
                             .snippet(snippet));
-                    //destination = latLng;
+                    destination = latLng;
                 }
             }
 
@@ -422,7 +423,7 @@ public class MapFragment extends Fragment
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 mSerachText.setText(place.getName());
 
-                geoLocate(place.getName());
+                geoLocate(place.getName(), place);
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);

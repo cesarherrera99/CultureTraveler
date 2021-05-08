@@ -76,7 +76,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -108,6 +110,7 @@ public class MapFragment extends Fragment
     private FusedLocationProviderClient mFusedLocationProviderClient;
     public Marker mMarker;
     LatLng source, destination;
+    Map<String,LatLng> latLnghshmp;
 
     //widgets
     private EditText mSerachText;
@@ -384,8 +387,21 @@ public class MapFragment extends Fragment
         mRef.child("phc").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                latLnghshmp = new HashMap<>();
+                mGoogleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getActivity()));
+
+                mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        LatLng latlng = latLnghshmp.get(marker.getId());
+                        if(latlng !=  null){
+                            destination = latlng;
+                        }
+                        return false;
+                    }
+                });
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    mGoogleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getActivity()));
                     PHC phc = snapshot.getValue(PHC.class);
                     LatLng latLng = new LatLng(phc.getLatitud(), phc.getLongitud());
 
@@ -397,9 +413,12 @@ public class MapFragment extends Fragment
                             .position(latLng)
                             .title(phc.getNome())
                             .snippet(snippet));
-                    destination = latLng;
+
+                    latLnghshmp.put(mMarker.getId(), latLng);
                 }
             }
+
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

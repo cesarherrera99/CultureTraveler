@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.culturetraveler.CustomInfoWindowAdapter;
+import com.example.culturetraveler.MainActivity;
 import com.example.culturetraveler.PHC;
 import com.example.culturetraveler.R;
 import com.example.culturetraveler.RegistoActivity;
@@ -121,6 +122,8 @@ public class MapFragment extends Fragment
     private static final float DEFAULT_ZOOM = 18;
     private int mAnimated = 0; //Utilização: animar a camara
 
+    private boolean isFromList = false;
+    private PHC model = null;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -153,6 +156,20 @@ public class MapFragment extends Fragment
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+
+        try {
+            if (getArguments() != null) {
+                MapFragmentArgs args = MapFragmentArgs.fromBundle(getArguments());
+                if (args.getData() != null) {
+                    model = args.getData();
+                    if (model.getLatitud() != 0.0 && model.getLongitud() != 0.0) {
+                        isFromList = true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -171,6 +188,26 @@ public class MapFragment extends Fragment
             mGoogleMap.setMyLocationEnabled(true);
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             mGoogleMap.getUiSettings().setCompassEnabled(false);
+
+            if (isFromList) {
+                if (model.getLatitud() != 0.0 && model.getLongitud() != 0.0) {
+
+                    String snippet = "Morada: " + model.getMorada() + "\n" +
+                            "Descrição: " + model.getDescricao() + "\n" +
+                            "Rating: " + model.getRating();
+
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(new LatLng(model.getLatitud(), model.getLongitud()));
+                    markerOptions.title(model.getNome());
+                    markerOptions.snippet(snippet);
+                    if (mGoogleMap != null) {
+                        mGoogleMap.clear();
+                        mGoogleMap.addMarker(markerOptions);
+                        getDirectionApiCall(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude())
+                                , new LatLng(model.getLatitud(), model.getLongitud()));
+                    }
+                }
+            }
 
             init();
         }
@@ -201,7 +238,7 @@ public class MapFragment extends Fragment
                 if(!isDirection){
                     isDirection = true;
                     imgDirection.setImageResource(R.drawable.ic_close);
-                    getDirectionApiCall();
+                    getDirectionApiCall(source, destination);
                 }else {
                     isDirection = false;
                     imgDirection.setImageResource(R.drawable.ic_go);
@@ -245,23 +282,20 @@ public class MapFragment extends Fragment
         markers();
     }
 
-    private void getDirectionApiCall() {
+    private void getDirectionApiCall(LatLng source, LatLng destination) {
         //source = new LatLng(41.133486, -8.573132);
 
-        new GetPathFromLocation(source, destination, new DirectionPointListener() {
-            @Override
-            public void onPath(PolylineOptions polyLine) {
-                mGoogleMap.addPolyline(polyLine);
+        new GetPathFromLocation(source, destination, polyLine -> {
+            mGoogleMap.addPolyline(polyLine);
 
-                CameraUpdate center=
-                        CameraUpdateFactory.newLatLng(source);
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(14);
+            CameraUpdate center =
+                    CameraUpdateFactory.newLatLng(source);
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
 
-                mGoogleMap.moveCamera(center);
-                mGoogleMap.animateCamera(zoom);
+            mGoogleMap.moveCamera(center);
+            mGoogleMap.animateCamera(zoom);
 
-                mMarker.hideInfoWindow();
-            }
+            mMarker.hideInfoWindow();
         }).execute();
     }
 
@@ -277,6 +311,9 @@ public class MapFragment extends Fragment
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()){
                             Location currentLocation = (Location) task.getResult();
+                            if (currentLocation != null) {
+                                MainActivity.currentPosition = new Location(currentLocation);
+                            }
                             if (mAnimated == 0 && currentLocation != null){
                                 try {
                                     moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);

@@ -24,6 +24,7 @@ public class    PHC implements Parcelable {
         this.idimagem = idimagem;
     }
 
+
     public PHC(String nome, String morada, String descricao, int idimagem, int direcoes, Double rating, Double latitud, Double longitud) {
         this.nome = nome;
         this.morada = morada;

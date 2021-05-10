@@ -1,17 +1,16 @@
 package com.example.culturetraveler;
 
-import android.location.Geocoder;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.LatLng;
-
-public class PHC {
+public class    PHC implements Parcelable {
 
     private String nome;
     private String morada;
     private String descricao;
     private double rating;
-    private double latitud;
-    private double longitud;
+    private Double latitud;
+    private Double longitud;
     private int idimagem;
     private int direcoes;
 
@@ -25,17 +24,52 @@ public class PHC {
         this.idimagem = idimagem;
     }
 
-    public PHC(String nome, String descricao, int idimagem, int direcoes) {
+    public PHC(String nome, String morada, String descricao, int idimagem, int direcoes, Double rating, Double latitud, Double longitud) {
         this.nome = nome;
+        this.morada = morada;
         this.descricao = descricao;
         this.idimagem = idimagem;
         this.direcoes = direcoes;
+        this.rating = rating;
+        this.latitud = latitud;
+        this.longitud = longitud;
     }
 
     public PHC() {
 
     }
 
+
+    protected PHC(Parcel in) {
+        nome = in.readString();
+        morada = in.readString();
+        descricao = in.readString();
+        rating = in.readDouble();
+        if (in.readByte() == 0) {
+            latitud = null;
+        } else {
+            latitud = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            longitud = null;
+        } else {
+            longitud = in.readDouble();
+        }
+        idimagem = in.readInt();
+        direcoes = in.readInt();
+    }
+
+    public static final Creator<PHC> CREATOR = new Creator<PHC>() {
+        @Override
+        public PHC createFromParcel(Parcel in) {
+            return new PHC(in);
+        }
+
+        @Override
+        public PHC[] newArray(int size) {
+            return new PHC[size];
+        }
+    };
 
     public String getNome() {
         return nome;
@@ -69,7 +103,7 @@ public class PHC {
         this.rating = rating;
     }
 
-    public double getLatitud() {
+    public Double getLatitud() {
         return latitud;
     }
 
@@ -77,7 +111,7 @@ public class PHC {
         this.latitud = latitud;
     }
 
-    public double getLongitud() {
+    public Double getLongitud() {
         return longitud;
     }
 
@@ -99,5 +133,32 @@ public class PHC {
 
     public void setDirecoes(int direcoes) {
         this.direcoes = direcoes;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(nome);
+        parcel.writeString(morada);
+        parcel.writeString(descricao);
+        parcel.writeDouble(rating);
+        if (latitud == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(latitud);
+        }
+        if (longitud == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(longitud);
+        }
+        parcel.writeInt(idimagem);
+        parcel.writeInt(direcoes);
     }
 }

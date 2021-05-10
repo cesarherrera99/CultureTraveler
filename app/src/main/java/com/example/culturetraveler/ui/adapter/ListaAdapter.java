@@ -9,38 +9,49 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.culturetraveler.MainActivity;
 import com.example.culturetraveler.PHC;
 import com.example.culturetraveler.R;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHolder>
-        implements View.OnClickListener {
+public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHolder> {
 
     ArrayList<PHC> listaPHC;
-    private View.OnClickListener listener;
+    private final Listener listener;
 
-    public ListaAdapter(ArrayList<PHC> listaPHC) {
-        this.listaPHC=listaPHC;
+    public ListaAdapter(ArrayList<PHC> listaPHC, Listener listener) {
+        this.listaPHC = listaPHC;
+        this.listener = listener;
     }
 
 
     @Override
     public ListaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_lista_item, null, false);
-        view.setOnClickListener(this);
         return new ListaViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListaViewHolder holder, int position) {
-        holder.txtNome.setText(listaPHC.get(position).getNome());
-        holder.txtinformacao.setText(listaPHC.get(position).getDescricao());
-        holder.imagem.setImageResource(listaPHC.get(position).getIdimagem());
-        holder.direcoes.setImageResource(listaPHC.get(position).getDirecoes());
-
+        try {
+            holder.txtNome.setText(listaPHC.get(position).getNome());
+            holder.txtinformacao.setText(listaPHC.get(position).getDescricao());
+            holder.imagem.setImageResource(listaPHC.get(position).getIdimagem());
+            holder.direcoes.setImageResource(listaPHC.get(position).getDirecoes());
+            if (MainActivity.currentPosition != null) {
+                holder.txtDistance.setText(getDistance(SphericalUtil.computeDistanceBetween(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude()),
+                        new LatLng(listaPHC.get(position).getLatitud(), listaPHC.get(position).getLongitud()))));
+            }
+            holder.itemView.setOnClickListener(view -> listener.clickListener(holder.itemView, listaPHC.get(position)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -48,32 +59,26 @@ public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHol
         return listaPHC.size();
     }
 
-    public void setOnCliclListener(View.OnClickListener listener) {
-        this.listener = listener;
-    }
-
-
-    @Override
-    public void onClick(View view) {
-
-        if (listener!=null ) {
-            listener.onClick(view);
-        }
-
+    private String getDistance(Double distance) {
+        return String.format(Locale.getDefault(), "%.2f", distance / 1000) + "km";
     }
 
     public class ListaViewHolder extends RecyclerView.ViewHolder {
-        TextView txtNome, txtinformacao;
+        TextView txtNome, txtinformacao, txtDistance;
         ImageView imagem, direcoes;
 
         public ListaViewHolder(View itemView) {
             super(itemView);
-            txtNome = (TextView) itemView.findViewById(R.id.idnome);
-            txtinformacao = (TextView) itemView.findViewById(R.id.idinfo);
-            imagem = (ImageView) itemView.findViewById(R.id.idimagem);
-            direcoes = (ImageView) itemView.findViewById(R.id.direcoes);
-
+            txtNome = itemView.findViewById(R.id.idnome);
+            txtinformacao = itemView.findViewById(R.id.idinfo);
+            imagem = itemView.findViewById(R.id.idimagem);
+            direcoes = itemView.findViewById(R.id.direcoes);
+            txtDistance = itemView.findViewById(R.id.idDistance);
         }
 
+    }
+
+    public interface Listener {
+        void clickListener(View view, PHC model);
     }
 }

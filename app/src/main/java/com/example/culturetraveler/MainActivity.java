@@ -1,8 +1,8 @@
 package com.example.culturetraveler;
 
+import android.location.Location;
 import android.os.Bundle;
 
-import com.example.culturetraveler.ui.lista.ListaFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +12,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static Location currentPosition = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

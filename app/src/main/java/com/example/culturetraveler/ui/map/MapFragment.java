@@ -209,6 +209,7 @@ public class MapFragment extends Fragment
                 }
             }
 
+
             init();
         }
     }

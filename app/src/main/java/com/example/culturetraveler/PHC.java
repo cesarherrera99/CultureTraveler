@@ -41,6 +41,7 @@ public class    PHC implements Parcelable {
     }
 
 
+
     protected PHC(Parcel in) {
         nome = in.readString();
         morada = in.readString();

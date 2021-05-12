@@ -84,6 +84,8 @@ public class ListaFragment extends Fragment implements ListaAdapter.Listener {
         Navigation.findNavController(view).navigate(action);
     }
 
+
+
     private void definirlista() {
 
         listaPHC.add(new PHC("Avenida dos Aliados", "Aliados, 4000-067 Porto, Portugal", "O centro e o coração da cidade do Porto", R.drawable.aliados, R.drawable.ic_direction_24, 4.8,41.1483, -8.6108));

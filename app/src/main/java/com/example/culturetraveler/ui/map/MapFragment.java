@@ -34,6 +34,7 @@ import com.example.culturetraveler.MainActivity;
 import com.example.culturetraveler.PHC;
 import com.example.culturetraveler.R;
 import com.example.culturetraveler.RegistoActivity;
+import com.example.culturetraveler.ui.adapter.ListaAdapter;
 import com.example.culturetraveler.utility.DirectionPointListener;
 import com.example.culturetraveler.utility.GetPathFromLocation;
 import com.google.android.gms.common.ConnectionResult;
@@ -73,12 +74,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -121,6 +124,7 @@ public class MapFragment extends Fragment
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 18;
     private int mAnimated = 0; //Utilização: animar a camara
+    private String time;
 
     private boolean isFromList = false;
     private PHC model = null;
@@ -191,8 +195,13 @@ public class MapFragment extends Fragment
 
             if (isFromList) {
                 if (model.getLatitud() != 0.0 && model.getLongitud() != 0.0) {
-
+                    Double distance = SphericalUtil.computeDistanceBetween(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude()),
+                            new LatLng(model.getLatitud(), model.getLongitud()));
+                    String distanceString = getDistance(distance);
+                    String tempoString = getTime(distance);
                     String snippet = "Morada: " + model.getMorada() + "\n" +
+                            "Distancia: " + distanceString + "\n" +
+                            "Tempo estimado: " + tempoString + "\n" +
                             "Descrição: " + model.getDescricao() + "\n" +
                             "Rating: " + model.getRating();
 
@@ -205,6 +214,8 @@ public class MapFragment extends Fragment
                         mGoogleMap.addMarker(markerOptions);
                         getDirectionApiCall(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude())
                                 , new LatLng(model.getLatitud(), model.getLongitud()));
+                        imgDirection.setImageResource(R.drawable.ic_close);
+                        isDirection = true;
                     }
                 }
             }
@@ -355,7 +366,13 @@ public class MapFragment extends Fragment
     }
     public void animatedCamera(LatLng latLng, float zoom, Place place){
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+        Double newDistance = SphericalUtil.computeDistanceBetween(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude()),
+                latLng);
+        String newDistanceString = getDistance(newDistance);
+        String newTempoString = getTime(newDistance);
         String snippet = "Morada: " + place.getAddress() + "\n" +
+                "Distancia: " + newDistanceString + "\n" +
+                "Tempo estimado: " + newTempoString + "\n" +
                 "Website: " + place.getWebsiteUri() + "\n" +
                 "Rating: " + place.getRating();
         mMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -442,8 +459,14 @@ public class MapFragment extends Fragment
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     PHC phc = snapshot.getValue(PHC.class);
                     LatLng latLng = new LatLng(phc.getLatitud(), phc.getLongitud());
+                    Double distance = SphericalUtil.computeDistanceBetween(new LatLng(MainActivity.currentPosition.getLatitude(), MainActivity.currentPosition.getLongitude()),
+                            new LatLng(phc.getLatitud(), phc.getLongitud()));
+                    String distanceString = getDistance(distance);
+                    String tempoString = getTime(distance);
 
                     String snippet = "Morada: " + phc.getMorada() + "\n" +
+                            "Distancia: " + distanceString + "\n" +
+                            "Tempo estimado: " + tempoString + "\n" +
                             "Descrição: " + phc.getDescricao() + "\n" +
                             "Rating: " + phc.getRating();
 
@@ -468,6 +491,27 @@ public class MapFragment extends Fragment
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    private String getDistance(Double distance) {
+        return String.format(Locale.getDefault(), "%.2f", distance / 1000) + "km";
+    }
+    private String getTime(Double distance){
+        Double dist = distance/1000;
+        if (dist < 1){
+            time = "Entre 10 a 5 minutos de carro";
+        }else if (dist > 1 && dist < 2){
+            time = "Entre 15 a 10 minutos de carro";
+        }else if (dist > 2 && dist < 3){
+            time = "Entre 20 a 15 minutos de carro";
+        }else if (dist > 3 && dist < 4){
+            time = "Entre 25 a 20 minutos de carro";
+        }else if (dist > 4 && dist < 5){
+            time = "Entre 30 a 25 minutos de carro";
+        }else if (dist > 5){
+            time = "Entre 35 minutos ou mais de carro";
+        }
+        return time;
     }
 
     //Função de autocomplete searchBar
